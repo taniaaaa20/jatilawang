@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    // Menampilkan halaman login
     public function showLogin()
     {
         if (session()->has('pegawai')) {
@@ -16,6 +18,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    // Proses login pegawai
     public function login(Request $request)
     {
         $request->validate([
@@ -23,19 +26,22 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        // Mencari pegawai berdasarkan username
         $pegawai = DB::table('pegawai')
             ->where('username', $request->username)
             ->first();
 
+        // Memeriksa username dan password
         if (
             !$pegawai ||
-            $pegawai->password !== $request->password
+            !Hash::check($request->password, $pegawai->password)
         ) {
             return back()
                 ->withInput($request->only('username'))
                 ->with('error', 'Username atau password salah.');
         }
 
+        // Memeriksa role
         $role = strtolower($pegawai->role);
 
         if (!in_array($role, ['pemilik', 'pegawai'])) {
@@ -44,6 +50,7 @@ class AuthController extends Controller
                 ->with('error', 'Role akun tidak valid.');
         }
 
+        // Membuat session baru setelah login berhasil
         $request->session()->regenerate();
 
         $request->session()->put([
@@ -52,9 +59,11 @@ class AuthController extends Controller
             'role' => $role,
         ]);
 
+        // Mengarahkan pengguna ke dashboard sesuai role
         return $this->redirectDashboard($role);
     }
 
+    // Redirect berdasarkan role
     private function redirectDashboard($role)
     {
         if ($role === 'pemilik') {
@@ -68,6 +77,7 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
+    // Proses logout
     public function logout(Request $request)
     {
         $request->session()->invalidate();
