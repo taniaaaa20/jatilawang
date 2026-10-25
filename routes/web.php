@@ -1,4 +1,3 @@
-```php
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -23,7 +22,7 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
-// Dashboard customer
+// Dashboard customer lama
 Route::get('/customer', [CustomerController::class, 'index'])
     ->name('customer.dashboard');
 
@@ -37,3 +36,20 @@ Route::get('/pemilik/dashboard', [DashboardPemilikController::class, 'index'])
 
 // Kelola barang
 Route::resource('barang', BarangController::class);
+
+// ========================================
+// DATA PELANGGAN
+// Bisa diakses pegawai dan pemilik
+// ========================================
+
+Route::get('/data-pelanggan', [CustomerController::class, 'dataPelanggan'])
+    ->name('customer.index');
+
+Route::post('/data-pelanggan', [CustomerController::class, 'store'])
+    ->name('customer.store');
+
+Route::put('/data-pelanggan/{id}', [CustomerController::class, 'update'])
+    ->name('customer.update');
+
+Route::delete('/data-pelanggan/{id}', [CustomerController::class, 'destroy'])
+    ->name('customer.destroy');

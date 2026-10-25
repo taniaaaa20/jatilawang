@@ -126,10 +126,11 @@
         Kelola Barang
     </a>
 
-    <a href="#">
-        <i class="bi bi-people-fill"></i>
-        Data Pelanggan
-    </a>
+<a class="{{ request()->routeIs('customer.index') ? 'active' : '' }}"
+   href="{{ route('customer.index') }}">
+    <i class="bi bi-people-fill"></i>
+    Data Pelanggan
+</a>
 
     <a href="#">
         <i class="bi bi-cart-check-fill"></i>
