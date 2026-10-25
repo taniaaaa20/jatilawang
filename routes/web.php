@@ -1,20 +1,19 @@
+```php
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardPegawaiController;
+use App\Http\Controllers\DashboardPemilikController;
+use App\Http\Controllers\BarangController;
 
+// Halaman awal
 Route::get('/', function () {
     return view('welcome');
 });
 
-use App\Http\Controllers\CustomerController;
-
-Route::get('/customer', [CustomerController::class, 'index'])
-    ->name('customer.dashboard');
-
-
-use App\Http\Controllers\AuthController;
-use Illuminate\Http\Request;
-
+// Login dan logout
 Route::get('/login', [AuthController::class, 'showLogin'])
     ->name('login');
 
@@ -24,26 +23,17 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
-Route::get('/pemilik/dashboard', function () {
-    if (session('role') !== 'pemilik') {
-        return redirect()->route('login');
-    }
+// Dashboard customer
+Route::get('/customer', [CustomerController::class, 'index'])
+    ->name('customer.dashboard');
 
-    return view('pemilik.dashboard');
-})->name('pemilik.dashboard');
+// Dashboard pegawai
+Route::get('/pegawai/dashboard', [DashboardPegawaiController::class, 'index'])
+    ->name('pegawai.dashboard');
 
-use App\Http\Controllers\DashboardPegawaiController;
+// Dashboard pemilik
+Route::get('/pemilik/dashboard', [DashboardPemilikController::class, 'index'])
+    ->name('pemilik.dashboard');
 
-Route::get('/pegawai/dashboard', [
-    DashboardPegawaiController::class,
-    'index'
-])->name('pegawai.dashboard');
-
-
-use App\Http\Controllers\DashboardPemilikController;
-
-Route::get('/pemilik/dashboard', [
-    DashboardPemilikController::class,
-    'index'
-])->name('pemilik.dashboard');
-
+// Kelola barang
+Route::resource('barang', BarangController::class);
