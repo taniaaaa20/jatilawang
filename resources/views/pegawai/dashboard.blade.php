@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,77 +21,15 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 260px;
-            height: 100vh;
-            padding: 25px;
-            background: #2f3e2c;
-            color: white;
-            overflow-y: auto;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 40px;
-        }
-
-        .logo > i {
-            font-size: 30px;
-        }
-
-        .logo span {
-            display: block;
-            color: #facc15;
-        }
-
-        .sidebar a {
-            display: block;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            color: white;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .sidebar a i {
-            margin-right: 10px;
-        }
-
-        .logout-form {
-            margin-top: 35px;
-        }
-
-        .sidebar .logout {
-            width: 100%;
-            border: none;
-            text-align: left;
-            background: transparent;
-            color: white;
-            padding: 12px;
-            border-radius: 12px;
-            font-family: inherit;
-        }
-
         .sidebar .logout:hover {
             background: rgba(255, 255, 255, 0.15);
         }
 
         .main {
-            margin-left: 280px;
+            margin-left: 260px;
             padding: 35px;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
         .welcome {
@@ -265,4 +204,5 @@
         </section>
     </main>
 </body>
+
 </html>

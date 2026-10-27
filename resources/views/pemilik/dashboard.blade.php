@@ -62,19 +62,20 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 13px 14px;
+            padding: 12px 18px;
             margin-bottom: 8px;
-            border-radius: 10px;
-            color: #e3ece5;
+            border-radius: 16px; /* Membuat sudut kotak sangat membulat persis seperti di gambar */
+            color: #ffffff;
             text-decoration: none;
-            font-size: 13px;
-            transition: .2s;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .sidebar a:hover,
         .sidebar a.active {
-            background: #2d6245;
-            color: white;
+            background: #394a39; /* Warna hijau abu/olive persis seperti kotak Kelola Pegawai di gambar */
+            color: #ffffff;
         }
 
         .sidebar a i {

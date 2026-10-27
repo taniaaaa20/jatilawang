@@ -1,0 +1,87 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    padding: 25px;
+    background: #2f3e2c;
+    color: white;
+    overflow-y: auto;
+    z-index: 1000;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+.sidebar * {
+    box-sizing: border-box;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+.logo>i {
+    font-size: 30px;
+}
+
+.logo span {
+    display: block;
+    color: #facc15;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.sidebar a i {
+    margin-right: 10px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.logout-form {
+    margin-top: 35px;
+}
+
+.sidebar .logout {
+    width: 100%;
+    border: none;
+    text-align: left;
+    background: transparent;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.sidebar .logout:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+}

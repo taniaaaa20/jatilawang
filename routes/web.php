@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardPegawaiController;
 use App\Http\Controllers\DashboardPemilikController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\TransaksiRentalController;
 
 // Halaman awal
 Route::get('/', function () {
@@ -53,3 +54,16 @@ Route::put('/data-pelanggan/{id}', [CustomerController::class, 'update'])
 
 Route::delete('/data-pelanggan/{id}', [CustomerController::class, 'destroy'])
     ->name('customer.destroy');
+    
+// Transaksi Rental
+Route::get('/pegawai/transaksi', [TransaksiRentalController::class, 'index'])
+    ->name('transaksi.index');
+
+Route::post('/pegawai/transaksi', [TransaksiRentalController::class, 'store'])
+    ->name('transaksi.store');
+
+Route::post('/pegawai/transaksi/{noNota}/kembalikan', [TransaksiRentalController::class, 'kembalikan'])
+    ->name('transaksi.kembalikan');
+
+Route::get('/pegawai/transaksi/{noNota}/nota', [TransaksiRentalController::class, 'nota'])
+    ->name('transaksi.nota');
