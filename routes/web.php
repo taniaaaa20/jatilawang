@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardPemilikController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\TransaksiRentalController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\LaporanKeuanganController;
 
 // Halaman awal
 Route::get('/', function () {
@@ -55,6 +56,10 @@ Route::put('/pemilik/pegawai/{id}', [PegawaiController::class, 'update'])
 Route::delete('/pemilik/pegawai/{id}', [PegawaiController::class, 'destroy'])
     ->name('pemilik.pegawai.destroy');
 
+// Laporan Keuangan Pemilik
+Route::get('/pemilik/laporan-keuangan', [LaporanKeuanganController::class, 'index'])
+    ->name('pemilik.laporan-keuangan.index');
+
 // Kelola barang
 Route::resource('barang', BarangController::class);
 
@@ -85,3 +90,4 @@ Route::post('/pegawai/transaksi/{noNota}/kembalikan', [TransaksiRentalController
 
 Route::get('/pegawai/transaksi/{noNota}/nota', [TransaksiRentalController::class, 'nota'])
     ->name('transaksi.nota');
+
