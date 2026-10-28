@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -135,6 +136,9 @@
         <h2 class="page-title">
             <i class="bi bi-cart-check-fill"></i> Transaksi Rental
         </h2>
+        <p class="page-subtitle">
+            Satu transaksi dapat berisi beberapa barang sewa sekaligus.
+        </p>
     </div>
 
     @if (session('success'))
