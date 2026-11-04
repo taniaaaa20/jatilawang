@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
-    // DASHBOARD LAMA: TETAP DIPERTAHANKAN
+    // DASHBOARD CUSTOMER
     public function index()
     {
         $kategoriList = [
@@ -65,14 +66,25 @@ class CustomerController extends Controller
         }
 
         $request->validate([
+            'id_customer' => [
+                'required',
+                'digits:16',
+                Rule::unique('customer', 'id_customer'),
+            ],
             'nama_customer' => 'required|string|max:50',
             'noHP_customer' => 'required|string|max:15',
+        ], [
+            'id_customer.required' => 'Nomor KTP wajib diisi.',
+            'id_customer.digits' => 'Nomor KTP harus terdiri dari 16 digit.',
+            'id_customer.unique' => 'Nomor KTP sudah terdaftar.',
+            'nama_customer.required' => 'Nama pelanggan wajib diisi.',
+            'nama_customer.max' => 'Nama pelanggan maksimal 50 karakter.',
+            'noHP_customer.required' => 'Nomor HP wajib diisi.',
+            'noHP_customer.max' => 'Nomor HP maksimal 15 karakter.',
         ]);
 
-        $id = 'CUS' . strtoupper(substr(uniqid(), -13));
-
         DB::table('customer')->insert([
-            'id_customer' => $id,
+            'id_customer' => $request->id_customer,
             'nama_customer' => $request->nama_customer,
             'noHP_customer' => $request->noHP_customer,
         ]);
@@ -93,6 +105,11 @@ class CustomerController extends Controller
         $request->validate([
             'nama_customer' => 'required|string|max:50',
             'noHP_customer' => 'required|string|max:15',
+        ], [
+            'nama_customer.required' => 'Nama pelanggan wajib diisi.',
+            'nama_customer.max' => 'Nama pelanggan maksimal 50 karakter.',
+            'noHP_customer.required' => 'Nomor HP wajib diisi.',
+            'noHP_customer.max' => 'Nomor HP maksimal 15 karakter.',
         ]);
 
         DB::table('customer')

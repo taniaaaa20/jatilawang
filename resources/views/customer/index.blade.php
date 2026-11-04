@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -249,6 +250,35 @@
                         </div>
 
                         <div class="modal-body">
+
+                            {{-- TAMBAHAN: ID PELANGGAN / NOMOR KTP --}}
+                            <div class="mb-3">
+                                <label for="id_customer" class="form-label">
+                                    ID Pelanggan (Nomor KTP)
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="id_customer"
+                                    id="id_customer"
+                                    class="form-control"
+                                    maxlength="16"
+                                    minlength="16"
+                                    pattern="[0-9]{16}"
+                                    inputmode="numeric"
+                                    value="{{ old('id_customer') }}"
+                                    placeholder="Masukkan 16 digit nomor KTP"
+                                    required>
+
+                                <small class="text-muted">
+                                    Nomor KTP harus terdiri dari 16 digit.
+                                </small>
+
+                                @error('id_customer')
+                                <small class="text-danger d-block">{{ $message }}</small>
+                                @enderror
+                            </div>
+
                             <div class="mb-3">
                                 <label class="form-label">Nama Pelanggan</label>
                                 <input type="text" name="nama_customer" class="form-control" maxlength="50"
@@ -291,8 +321,9 @@
 
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label">ID Pelanggan</label>
-                                <input type="text" class="form-control" value="{{ $customer->id_customer }}" readonly>
+                                <label class="form-label">ID Pelanggan (Nomor KTP)</label>
+                                <input type="text" class="form-control"
+                                    value="{{ $customer->id_customer }}" readonly>
                             </div>
 
                             <div class="mb-3">

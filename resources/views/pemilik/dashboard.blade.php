@@ -235,7 +235,7 @@
         <div class="welcome">
             <h2>
                 Selamat Datang,
-                {{ session('nama_pegawai', session('pegawai')) }} 👑
+                {{ session('nama_pegawai', session('pegawai')) }}   
             </h2>
 
             <p>
