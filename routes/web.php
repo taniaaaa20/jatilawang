@@ -9,6 +9,7 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\TransaksiRentalController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\LaporanKeuanganController;
+use App\Http\Controllers\LaporanStokController;
 
 // Halaman awal
 Route::get('/', function () {
@@ -59,6 +60,10 @@ Route::delete('/pemilik/pegawai/{id}', [PegawaiController::class, 'destroy'])
 // Laporan Keuangan Pemilik
 Route::get('/pemilik/laporan-keuangan', [LaporanKeuanganController::class, 'index'])
     ->name('pemilik.laporan-keuangan.index');
+
+// Laporan Stok Pemilik
+Route::get('/pemilik/laporan-stok', [LaporanStokController::class, 'index'])
+    ->name('pemilik.laporan-stok.index');
 
 // Kelola barang
 Route::resource('barang', BarangController::class);
