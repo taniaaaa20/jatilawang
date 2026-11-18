@@ -26,19 +26,29 @@ class BarangController extends Controller
             'Jaket' => 'JAK',
             'Matras' => 'MAT',
             'Trekking Pole' => 'TRK',
+            'Peralatan Tracking' => 'TRK',
             'Peralatan Masak' => 'MAS',
+            'Alat Masak' => 'MAS',
+            'Peralatan Tidur' => 'TID',
+            'Penerangan' => 'PEN',
+            'Peralatan Lainnya' => 'LLN',
         ];
 
         $kategoriNormal = trim($kategori);
         $kodeKategori = $daftarKode[$kategoriNormal] ?? null;
 
         if (!$kodeKategori) {
-            abort(422, 'Kategori belum memiliki kode barang.');
+            abort(
+                422,
+                'Kategori "' . $kategoriNormal .
+                '" belum memiliki kode barang. Periksa daftar kategori.'
+            );
         }
 
-        // Cari nomor terbesar untuk kategori tersebut
+        // Cari nomor terbesar berdasarkan kode kategori
         $barangTerakhir = DB::table('barang')
             ->where('id_barang', 'like', $kodeKategori . '%')
+            ->whereRaw('LENGTH(id_barang) = 5')
             ->orderByRaw(
                 'CAST(SUBSTRING(id_barang, 4, 2) AS UNSIGNED) DESC'
             )
@@ -57,7 +67,11 @@ class BarangController extends Controller
         }
 
         if ($nomorBaru > 99) {
-            abort(422, 'Nomor kode barang untuk kategori ini sudah penuh.');
+            abort(
+                422,
+                'Nomor kode barang untuk kategori "' .
+                $kategoriNormal . '" sudah penuh.'
+            );
         }
 
         return $kodeKategori . str_pad(
@@ -79,7 +93,10 @@ class BarangController extends Controller
             ->orderBy('id_barang', 'asc')
             ->get();
 
-        return view('pegawai.barang.index', compact('data_barang'));
+        return view(
+            'pegawai.barang.index',
+            compact('data_barang')
+        );
     }
 
     // Menampilkan form tambah barang
@@ -108,14 +125,14 @@ class BarangController extends Controller
             'gambar' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        // Validasi kategori sebelum memproses gambar
+        $idBarang = $this->buatIdBarang($request->kategori);
+
         $folderGambar = public_path('gambar');
 
         if (!file_exists($folderGambar)) {
             mkdir($folderGambar, 0755, true);
         }
-
-        // Membuat ID berdasarkan kategori
-        $idBarang = $this->buatIdBarang($request->kategori);
 
         $namaGambar = $request->file('gambar')->hashName();
 
@@ -128,7 +145,7 @@ class BarangController extends Controller
             'id_barang' => $idBarang,
             'nama_barang' => $request->nama_barang,
             'merk' => $request->merk,
-            'kategori' => $request->kategori,
+            'kategori' => trim($request->kategori),
             'harga' => $request->harga,
             'stok' => $request->stok,
             'gambar' => $namaGambar,
@@ -183,7 +200,9 @@ class BarangController extends Controller
 
         $namaGambar = $data->gambar;
         $folderGambar = public_path('gambar');
+        $gambarLama = $data->gambar;
 
+        // Unggah gambar baru jika dipilih
         if ($request->hasFile('gambar')) {
             if (!file_exists($folderGambar)) {
                 mkdir($folderGambar, 0755, true);
@@ -195,13 +214,6 @@ class BarangController extends Controller
                 $folderGambar,
                 $namaGambar
             );
-
-            if (
-                $data->gambar &&
-                file_exists($folderGambar . '/' . $data->gambar)
-            ) {
-                unlink($folderGambar . '/' . $data->gambar);
-            }
         }
 
         DB::table('barang')
@@ -209,11 +221,24 @@ class BarangController extends Controller
             ->update([
                 'nama_barang' => $request->nama_barang,
                 'merk' => $request->merk,
-                'kategori' => $request->kategori,
+                'kategori' => trim($request->kategori),
                 'harga' => $request->harga,
                 'stok' => $request->stok,
                 'gambar' => $namaGambar,
             ]);
+
+        // Hapus gambar lama setelah data berhasil diperbarui
+        if (
+            $request->hasFile('gambar') &&
+            $gambarLama &&
+            $gambarLama !== $namaGambar
+        ) {
+            $pathGambarLama = $folderGambar . '/' . $gambarLama;
+
+            if (file_exists($pathGambarLama)) {
+                unlink($pathGambarLama);
+            }
+        }
 
         return redirect()
             ->route('barang.index')
@@ -221,9 +246,12 @@ class BarangController extends Controller
     }
 
     // Menghapus barang
-
     public function destroy($id)
     {
+        if ($redirect = $this->cekLogin()) {
+            return $redirect;
+        }
+
         $data = DB::table('barang')
             ->where('id_barang', $id)
             ->first();
@@ -242,7 +270,10 @@ class BarangController extends Controller
         if ($adaTransaksi) {
             return redirect()
                 ->route('barang.index')
-                ->with('error', 'Barang tidak dapat dihapus karena sudah digunakan dalam transaksi sewa.');
+                ->with(
+                    'error',
+                    'Barang tidak dapat dihapus karena sudah digunakan dalam transaksi sewa.'
+                );
         }
 
         // Hapus data barang
@@ -261,4 +292,4 @@ class BarangController extends Controller
             ->route('barang.index')
             ->with('success', 'Barang berhasil dihapus.');
     }
-} 
+}

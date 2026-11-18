@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,8 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <style>
         * {
@@ -24,7 +26,7 @@
         .navbar {
             background: white;
             padding: 18px 0;
-            box-shadow: 0 2px 15px rgba(0,0,0,.08);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, .08);
         }
 
         .logo {
@@ -44,7 +46,7 @@
             border-radius: 25px;
             color: white;
             background:
-                linear-gradient(90deg, rgba(35,50,32,.93), rgba(90,60,35,.65)),
+                linear-gradient(90deg, rgba(35, 50, 32, .93), rgba(90, 60, 35, .65)),
                 url('https://media.istockphoto.com/id/1391293923/id/vektor/lanskap-gunung-vintage-gunung-dengan-hutan-dan-matahari-gaya-retro.jpg?s=170667a&w=0&k=20&c=KpcUOAEs-SfBNlqpmhgyZiIjaTDn3rakjJ4hwONsK98=');
             background-size: cover;
             background-position: center;
@@ -90,7 +92,7 @@
             overflow: hidden;
             border-radius: 18px;
             background: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,.06);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .06);
             transition: .2s;
         }
 
@@ -98,12 +100,19 @@
             transform: translateY(-4px);
         }
 
+
+
         .product-img {
-            width: 100%;
+            display: block;
+            width: 85%;
             height: 190px;
-            object-fit: cover;
-            background: #e5e7eb;
+            margin: 0 auto;
+            object-fit: contain;
+            background: #ffffff;
         }
+
+
+
 
         .product-info {
             padding: 18px;
@@ -131,6 +140,18 @@
         .stock {
             margin-top: 8px;
             font-size: 13px;
+        }
+
+        .judul-kategori {
+            margin: 30px 0 20px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #2f3e2c;
+        }
+
+        .judul-kategori i {
+            margin-right: 8px;
+            color: #b45309;
         }
 
         footer {
@@ -172,8 +193,7 @@
                 untuk petualangan outdoor terbaikmu.
             </p>
 
-            <a href="https://wa.me/6285240975464" target="_blank"
-               class="btn-wa">
+            <a href="https://wa.me/6285240975464" target="_blank" class="btn-wa">
                 <i class="bi bi-whatsapp"></i> WhatsApp
             </a>
         </section>
@@ -184,15 +204,12 @@
             <div class="filter-box">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <input type="text" id="cari"
-                               class="form-control"
-                               placeholder="Cari nama barang atau merek..."
-                               oninput="filterProduk()">
+                        <input type="text" id="cari" class="form-control" placeholder="Cari nama barang atau merek..."
+                            oninput="filterProduk()">
                     </div>
 
                     <div class="col-md-6">
-                        <select id="kategori" class="form-select"
-                                onchange="filterProduk()">
+                        <select id="kategori" class="form-select" onchange="filterProduk()">
                             <option value="">Semua Kategori</option>
 
                             @foreach ($kategoriList as $kategori)
@@ -205,56 +222,88 @@
                 </div>
             </div>
 
-            <div class="row g-4" id="daftarProduk">
-                @forelse ($dataBarang as $barang)
-                    <div class="col-lg-3 col-md-4 col-sm-6 item-produk"
-                         data-nama="{{ strtolower($barang->nama_barang . ' ' . ($barang->merk ?? '')) }}"
-                         data-kategori="{{ $barang->kategori }}">
+            @php
+                $daftarKategori = [
+                    'Tenda' => 'bi-house-door-fill',
+                    'Carrier' => 'bi-backpack-fill',
+                    'Peralatan Masak' => 'bi-cup-hot-fill',
+                    'Peralatan Tidur' => 'bi-moon-stars-fill',
+                    'Peralatan Tracking' => 'bi-signpost-split-fill',
+                    'Penerangan' => 'bi-lightbulb-fill',
+                    'Peralatan Lainnya' => 'bi-box-seam-fill',
+                ];
 
-                        <div class="product-card">
-                            @if (!empty($barang->gambar))
-                                <img
-                                    src="{{ asset('gambar/' . $barang->gambar) }}"
-                                    class="product-img"
-                                    alt="{{ $barang->nama_barang }}">
-                            @else
-                                <div class="product-img d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-image fs-1 text-secondary"></i>
-                                </div>
-                            @endif
+                $barangPerKategori = $dataBarang->groupBy('kategori');
+            @endphp
 
-                            <div class="product-info">
-                                <div class="category">
-                                    {{ $barang->kategori }}
-                                </div>
+            <div id="daftarProduk">
+                @forelse ($daftarKategori as $namaKategori => $ikon)
+                    @php
+                        $barangKategori = $barangPerKategori->get(
+                            $namaKategori,
+                            collect()
+                        );
+                    @endphp
 
-                                <div class="product-name">
-                                    {{ $barang->nama_barang }}
-                                </div>
+                    @if ($barangKategori->isNotEmpty())
+                        <div class="kategori-produk" data-kategori-section="{{ $namaKategori }}">
 
-                                @if (!empty($barang->merk))
-                                    <div class="text-secondary small mt-1">
-                                        {{ $barang->merk }}
+                            <h3 class="judul-kategori">
+                                <i class="bi {{ $ikon }}"></i>{{ $namaKategori }}
+                            </h3>
+
+                            <div class="row g-4">
+                                @foreach ($barangKategori as $barang)
+                                    <div class="col-lg-3 col-md-4 col-sm-6 item-produk"
+                                        data-nama="{{ strtolower($barang->nama_barang . ' ' . ($barang->merk ?? '')) }}"
+                                        data-kategori="{{ $barang->kategori }}">
+
+                                        <div class="product-card">
+                                            @if (!empty($barang->gambar))
+                                                <img src="{{ asset('gambar/' . $barang->gambar) }}" class="product-img"
+                                                    alt="{{ $barang->nama_barang }}">
+                                            @else
+                                                <div class="product-img d-flex align-items-center justify-content-center">
+                                                    <i class="bi bi-image fs-1 text-secondary"></i>
+                                                </div>
+                                            @endif
+
+                                            <div class="product-info">
+                                                <div class="category">
+                                                    {{ $barang->kategori }}
+                                                </div>
+
+                                                <div class="product-name">
+                                                    {{ $barang->nama_barang }}
+                                                </div>
+
+                                                @if (!empty($barang->merk))
+                                                    <div class="text-secondary small mt-1">
+                                                        {{ $barang->merk }}
+                                                    </div>
+                                                @endif
+
+                                                <div class="price">
+                                                    Rp {{ number_format($barang->harga, 0, ',', '.') }}
+                                                </div>
+
+                                                <div class="stock">
+                                                    @if ($barang->stok > 0)
+                                                        <span class="badge bg-success">TERSEDIA</span>
+                                                        <span class="text-secondary">
+                                                            Stok: {{ $barang->stok }}
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-danger">HABIS</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                @endif
-
-                                <div class="price">
-                                    Rp {{ number_format($barang->harga, 0, ',', '.') }}
-                                </div>
-
-                                <div class="stock">
-                                    @if ($barang->stok > 0)
-                                        <span class="badge bg-success">TERSEDIA</span>
-                                        <span class="text-secondary">
-                                            Stok: {{ $barang->stok }}
-                                        </span>
-                                    @else
-                                        <span class="badge bg-danger">HABIS</span>
-                                    @endif
-                                </div>
+                                @endforeach
                             </div>
                         </div>
-                    </div>
+                    @endif
                 @empty
                     <div class="col-12">
                         <div class="alert alert-light">
@@ -279,9 +328,10 @@
             const cari = document.getElementById('cari').value.toLowerCase();
             const kategori = document.getElementById('kategori').value;
             const produk = document.querySelectorAll('.item-produk');
+            const bagianKategori = document.querySelectorAll('.kategori-produk');
             let jumlahTampil = 0;
 
-            produk.forEach(function(item) {
+            produk.forEach(function (item) {
                 const nama = item.dataset.nama;
                 const jenis = item.dataset.kategori;
 
@@ -296,9 +346,18 @@
                 }
             });
 
+            bagianKategori.forEach(function (bagian) {
+                const jumlahProduk = bagian.querySelectorAll(
+                    '.item-produk:not(.d-none)'
+                ).length;
+
+                bagian.classList.toggle('d-none', jumlahProduk === 0);
+            });
+
             document.getElementById('tidakDitemukan')
                 .classList.toggle('d-none', jumlahTampil > 0);
         }
     </script>
 </body>
+
 </html>
