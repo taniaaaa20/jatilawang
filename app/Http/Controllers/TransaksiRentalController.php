@@ -85,7 +85,7 @@ class TransaksiRentalController extends Controller
 
         $request->validate([
             'id_customer' => 'required|exists:customer,id_customer',
-            'tanggal_sewa' => 'required|date',
+            'tanggal_sewa' => 'required|date|after_or_equal:today',
             'lama_sewa' => 'required|integer|min:1',
             'tujuan' => 'required|string|max:50',
             'id_barang' => 'required|array|min:1',
@@ -115,6 +115,7 @@ class TransaksiRentalController extends Controller
         try {
             DB::transaction(function () use ($request, $pesanan) {
                 $tanggalSewa = $request->tanggal_sewa;
+
                 $tanggalKembali = date(
                     'Y-m-d',
                     strtotime($tanggalSewa . ' +' . (int) $request->lama_sewa . ' days')
@@ -150,7 +151,7 @@ class TransaksiRentalController extends Controller
                         'jumlah_barang' => $jumlah,
                     ];
                 }
-                
+
                 $notaTerakhir = DB::table('sewa')
                     ->where('no_nota', 'like', 'NT%')
                     ->orderByDesc('no_nota')
@@ -195,6 +196,7 @@ class TransaksiRentalController extends Controller
 
             return redirect()->route('transaksi.index')
                 ->with('success', 'Transaksi rental berhasil disimpan.');
+
         } catch (\Throwable $e) {
             return back()->withInput()
                 ->with('error', $e->getMessage());
@@ -243,6 +245,7 @@ class TransaksiRentalController extends Controller
 
             return redirect()->route('transaksi.index')
                 ->with('success', 'Pengembalian barang berhasil dicatat.');
+
         } catch (\Throwable $e) {
             return back()->with('error', $e->getMessage());
         }

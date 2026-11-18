@@ -1,4 +1,3 @@
-
 <style>
     .sidebar {
         position: fixed;
@@ -103,77 +102,52 @@
     </div>
 
     {{-- Dashboard --}}
-    <a
-        class="{{ request()->routeIs('pemilik.dashboard') ? 'active' : '' }}"
-        href="{{ route('pemilik.dashboard') }}"
-    >
+    <a class="{{ request()->routeIs('pemilik.dashboard') ? 'active' : '' }}" href="{{ route('pemilik.dashboard') }}">
         <i class="bi bi-speedometer2"></i>
         Dashboard
     </a>
 
     {{-- Kelola Pegawai --}}
-    <a
-        class="{{ request()->is('pemilik/pegawai*') ? 'active' : '' }}"
-        href="{{ url('/pemilik/pegawai') }}"
-    >
+    <a class="{{ request()->is('pemilik/pegawai*') ? 'active' : '' }}" href="{{ url('/pemilik/pegawai') }}">
         <i class="bi bi-person-badge-fill"></i>
         Kelola Pegawai
     </a>
 
     {{-- Laporan Keuangan --}}
-    <a
-        class="{{ request()->is('pemilik/laporan-keuangan*') ? 'active' : '' }}"
-        href="{{ \Illuminate\Support\Facades\Route::has('pemilik.laporan-keuangan.index')
-            ? route('pemilik.laporan-keuangan.index')
-            : url('/pemilik/laporan-keuangan') }}"
-    >
+    <a class="{{ request()->is('pemilik/laporan-keuangan*') ? 'active' : '' }}" href="{{ \Illuminate\Support\Facades\Route::has('pemilik.laporan-keuangan.index')
+    ? route('pemilik.laporan-keuangan.index')
+    : url('/pemilik/laporan-keuangan') }}">
         <i class="bi bi-cash-stack"></i>
         Laporan Keuangan
     </a>
 
     {{-- Laporan Stok --}}
-    <a
-        class="{{ request()->is('pemilik/laporan-stok*') ? 'active' : '' }}"
-        href="{{ url('/pemilik/laporan-stok') }}"
-    >
+    <a class="{{ request()->routeIs('pemilik.laporan-stok.index') ? 'active' : '' }}"
+        href="{{ route('pemilik.laporan-stok.index') }}">
         <i class="bi bi-boxes"></i>
         Laporan Stok
     </a>
 
     {{-- Transaksi --}}
-    <a
-        class="{{ request()->is('pemilik/transaksi*') ? 'active' : '' }}"
-        href="{{ url('/pemilik/transaksi') }}"
-    >
+    <a class="{{ request()->is('pemilik/transaksi*') ? 'active' : '' }}" href="{{ url('/pemilik/transaksi') }}">
         <i class="bi bi-clock-history"></i>
         Transaksi
     </a>
 
     {{-- Data Customer --}}
-    <a
-        class="{{ request()->is('pemilik/customer*') ? 'active' : '' }}"
-        href="{{ url('/pemilik/customer') }}"
-    >
+    <a class="{{ request()->is('pemilik/customer*') ? 'active' : '' }}" href="{{ url('/pemilik/customer') }}">
         <i class="bi bi-people-fill"></i>
         Data Customer
     </a>
 
     {{-- Logout --}}
-    <a
-        class="logout"
-        href="{{ route('logout') }}"
-        onclick="event.preventDefault(); document.getElementById('form-logout-pemilik').submit();"
-    >
+    <a class="logout" href="{{ route('logout') }}"
+        onclick="event.preventDefault(); document.getElementById('form-logout-pemilik').submit();">
         <i class="bi bi-box-arrow-right"></i>
         Logout
     </a>
 
-    <form
-        id="form-logout-pemilik"
-        action="{{ route('logout') }}"
-        method="POST"
-        style="display: none;"
-    >
+    <form id="form-logout-pemilik" action="{{ route('logout') }}" method="POST" style="display: none;">
         @csrf
     </form>
 
