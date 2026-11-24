@@ -33,8 +33,12 @@ class CustomerController extends Controller
     // CEK AKSES PEGAWAI DAN PEMILIK
     private function cekAkses()
     {
-        if (!in_array(session('role'), ['pegawai', 'pemilik'])) {
+        if (!session()->has('pegawai')) {
             return redirect()->route('login');
+        }
+
+        if (!in_array(session('role'), ['pegawai', 'pemilik'])) {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
         return null;
@@ -102,6 +106,16 @@ class CustomerController extends Controller
             return $cek;
         }
 
+        // Pastikan pelanggan tersedia
+        $customer = DB::table('customer')
+            ->where('id_customer', $id)
+            ->first();
+
+        if (!$customer) {
+            return redirect()->route('customer.index')
+                ->with('error', 'Data pelanggan tidak ditemukan.');
+        }
+
         $request->validate([
             'nama_customer' => 'required|string|max:50',
             'noHP_customer' => 'required|string|max:15',
@@ -132,9 +146,39 @@ class CustomerController extends Controller
             return $cek;
         }
 
-        DB::table('customer')
+        // CEK APAKAH DATA PELANGGAN TERSEDIA
+        $customer = DB::table('customer')
+            ->where('id_customer', $id)
+            ->first();
+
+        if (!$customer) {
+            return redirect()->route('customer.index')
+                ->with('error', 'Data pelanggan tidak ditemukan.');
+        }
+
+        // CEK RIWAYAT TRANSAKSI PELANGGAN
+        $adaTransaksi = DB::table('sewa')
+            ->where('id_customer', $id)
+            ->exists();
+
+        // JIKA MEMILIKI RIWAYAT TRANSAKSI, PENGHAPUSAN DITOLAK
+        if ($adaTransaksi) {
+            return redirect()->route('customer.index')
+                ->with(
+                    'error',
+                    'Pelanggan tidak dapat dihapus karena sudah memiliki riwayat transaksi.'
+                );
+        }
+
+        // HAPUS DATA PELANGGAN
+        $terhapus = DB::table('customer')
             ->where('id_customer', $id)
             ->delete();
+
+        if (!$terhapus) {
+            return redirect()->route('customer.index')
+                ->with('error', 'Data pelanggan gagal dihapus.');
+        }
 
         return redirect()->route('customer.index')
             ->with('success', 'Data pelanggan berhasil dihapus.');

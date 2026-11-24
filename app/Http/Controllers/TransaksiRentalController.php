@@ -16,6 +16,34 @@ class TransaksiRentalController extends Controller
         return null;
     }
 
+    // Membuat nomor nota otomatis
+    private function generateNoNota()
+    {
+        $nomorTerakhir = DB::table('sewa')
+            ->where('no_nota', 'like', 'NT%')
+            ->selectRaw("
+                MAX(CAST(SUBSTRING(no_nota, 3) AS UNSIGNED)) as nomor
+            ")
+            ->value('nomor');
+
+        $nomorBaru = ((int) $nomorTerakhir) + 1;
+
+        $noNota = 'NT' . str_pad(
+            $nomorBaru,
+            6,
+            '0',
+            STR_PAD_LEFT
+        );
+
+        if (strlen($noNota) > 8) {
+            throw new \RuntimeException(
+                'Nomor transaksi sudah mencapai batas.'
+            );
+        }
+
+        return $noNota;
+    }
+
     // Menampilkan form dan daftar transaksi
     public function index()
     {
@@ -40,7 +68,12 @@ class TransaksiRentalController extends Controller
                 's.*',
                 'c.nama_customer',
                 'c.noHP_customer',
-                DB::raw("GROUP_CONCAT(CONCAT(b.nama_barang, ' (', ds.jumlah_barang, ')') SEPARATOR ', ') AS daftar_barang")
+                DB::raw("
+                    GROUP_CONCAT(
+                        CONCAT(b.nama_barang, ' (', ds.jumlah_barang, ')')
+                        SEPARATOR ', '
+                    ) AS daftar_barang
+                ")
             )
             ->groupBy(
                 's.no_nota',
@@ -114,29 +147,37 @@ class TransaksiRentalController extends Controller
 
         try {
             DB::transaction(function () use ($request, $pesanan) {
+
                 $tanggalSewa = $request->tanggal_sewa;
 
                 $tanggalKembali = date(
                     'Y-m-d',
-                    strtotime($tanggalSewa . ' +' . (int) $request->lama_sewa . ' days')
+                    strtotime(
+                        $tanggalSewa . ' +' .
+                        (int) $request->lama_sewa . ' days'
+                    )
                 );
 
                 $total = 0;
                 $items = [];
 
                 foreach ($pesanan as $idBarang => $jumlah) {
+
                     $barang = DB::table('barang')
                         ->where('id_barang', $idBarang)
                         ->lockForUpdate()
                         ->first();
 
                     if (!$barang) {
-                        throw new \RuntimeException('Barang tidak ditemukan.');
+                        throw new \RuntimeException(
+                            'Barang tidak ditemukan.'
+                        );
                     }
 
                     if ((int) $barang->stok < $jumlah) {
                         throw new \RuntimeException(
-                            'Stok ' . $barang->nama_barang . ' tidak mencukupi.'
+                            'Stok ' . $barang->nama_barang .
+                            ' tidak mencukupi.'
                         );
                     }
 
@@ -152,22 +193,10 @@ class TransaksiRentalController extends Controller
                     ];
                 }
 
-                $notaTerakhir = DB::table('sewa')
-                    ->where('no_nota', 'like', 'NT%')
-                    ->orderByDesc('no_nota')
-                    ->lockForUpdate()
-                    ->value('no_nota');
+                // Membuat nomor nota terbaru
+                $noNota = $this->generateNoNota();
 
-                $nomor = $notaTerakhir
-                    ? ((int) substr($notaTerakhir, 2)) + 1
-                    : 1;
-
-                $noNota = 'NT' . str_pad($nomor, 6, '0', STR_PAD_LEFT);
-
-                if (strlen($noNota) > 8) {
-                    throw new \RuntimeException('Nomor transaksi sudah mencapai batas.');
-                }
-
+                // Menyimpan transaksi utama
                 DB::table('sewa')->insert([
                     'no_nota' => $noNota,
                     'id_pegawai' => session('pegawai'),
@@ -181,7 +210,9 @@ class TransaksiRentalController extends Controller
                     'status' => 'Dipinjam',
                 ]);
 
+                // Menyimpan detail barang dan mengurangi stok
                 foreach ($items as $item) {
+
                     DB::table('detail_sewa')->insert([
                         'no_nota' => $noNota,
                         'id_barang' => $item['id_barang'],
@@ -190,7 +221,10 @@ class TransaksiRentalController extends Controller
 
                     DB::table('barang')
                         ->where('id_barang', $item['id_barang'])
-                        ->decrement('stok', $item['jumlah_barang']);
+                        ->decrement(
+                            'stok',
+                            $item['jumlah_barang']
+                        );
                 }
             });
 
@@ -198,6 +232,7 @@ class TransaksiRentalController extends Controller
                 ->with('success', 'Transaksi rental berhasil disimpan.');
 
         } catch (\Throwable $e) {
+
             return back()->withInput()
                 ->with('error', $e->getMessage());
         }
@@ -212,17 +247,22 @@ class TransaksiRentalController extends Controller
 
         try {
             DB::transaction(function () use ($noNota) {
+
                 $sewa = DB::table('sewa')
                     ->where('no_nota', $noNota)
                     ->lockForUpdate()
                     ->first();
 
                 if (!$sewa) {
-                    throw new \RuntimeException('Transaksi tidak ditemukan.');
+                    throw new \RuntimeException(
+                        'Transaksi tidak ditemukan.'
+                    );
                 }
 
                 if ($sewa->tanggal_dikembalikan) {
-                    throw new \RuntimeException('Barang pada transaksi ini sudah dikembalikan.');
+                    throw new \RuntimeException(
+                        'Barang pada transaksi ini sudah dikembalikan.'
+                    );
                 }
 
                 $detail = DB::table('detail_sewa')
@@ -247,11 +287,12 @@ class TransaksiRentalController extends Controller
                 ->with('success', 'Pengembalian barang berhasil dicatat.');
 
         } catch (\Throwable $e) {
+
             return back()->with('error', $e->getMessage());
         }
     }
 
-    // Menampilkan nota hanya untuk transaksi yang sudah dikembalikan
+    // Menampilkan nota setelah transaksi dikembalikan
     public function nota($noNota)
     {
         if ($redirect = $this->cekLogin()) {
@@ -261,7 +302,11 @@ class TransaksiRentalController extends Controller
         $transaksi = DB::table('sewa as s')
             ->join('customer as c', 's.id_customer', '=', 'c.id_customer')
             ->where('s.no_nota', $noNota)
-            ->select('s.*', 'c.nama_customer', 'c.noHP_customer')
+            ->select(
+                's.*',
+                'c.nama_customer',
+                'c.noHP_customer'
+            )
             ->first();
 
         if (!$transaksi) {
@@ -270,15 +315,25 @@ class TransaksiRentalController extends Controller
 
         if (!$transaksi->tanggal_dikembalikan) {
             return redirect()->route('transaksi.index')
-                ->with('error', 'Nota hanya tersedia setelah barang dikembalikan.');
+                ->with(
+                    'error',
+                    'Nota hanya tersedia setelah barang dikembalikan.'
+                );
         }
 
         $detail = DB::table('detail_sewa as ds')
             ->join('barang as b', 'ds.id_barang', '=', 'b.id_barang')
             ->where('ds.no_nota', $noNota)
-            ->select('ds.*', 'b.nama_barang', 'b.harga')
+            ->select(
+                'ds.*',
+                'b.nama_barang',
+                'b.harga'
+            )
             ->get();
 
-        return view('pegawai.transaksi.nota', compact('transaksi', 'detail'));
+        return view(
+            'pegawai.transaksi.nota',
+            compact('transaksi', 'detail')
+        );
     }
 }

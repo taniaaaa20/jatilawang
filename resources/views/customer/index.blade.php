@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -158,9 +157,22 @@
             </button>
         </div>
 
+        {{-- PESAN BERHASIL --}}
         @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle-fill me-2"></i>
             {{ session('success') }}
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        {{-- PESAN GAGAL --}}
+        @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ session('error') }}
+
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         @endif
@@ -257,18 +269,9 @@
                                     ID Pelanggan (Nomor KTP)
                                 </label>
 
-                                <input
-                                    type="text"
-                                    name="id_customer"
-                                    id="id_customer"
-                                    class="form-control"
-                                    maxlength="16"
-                                    minlength="16"
-                                    pattern="[0-9]{16}"
-                                    inputmode="numeric"
-                                    value="{{ old('id_customer') }}"
-                                    placeholder="Masukkan 16 digit nomor KTP"
-                                    required>
+                                <input type="text" name="id_customer" id="id_customer" class="form-control"
+                                    maxlength="16" minlength="16" pattern="[0-9]{16}" inputmode="numeric"
+                                    value="{{ old('id_customer') }}" placeholder="Masukkan 16 digit nomor KTP" required>
 
                                 <small class="text-muted">
                                     Nomor KTP harus terdiri dari 16 digit.
@@ -322,8 +325,7 @@
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label class="form-label">ID Pelanggan (Nomor KTP)</label>
-                                <input type="text" class="form-control"
-                                    value="{{ $customer->id_customer }}" readonly>
+                                <input type="text" class="form-control" value="{{ $customer->id_customer }}" readonly>
                             </div>
 
                             <div class="mb-3">

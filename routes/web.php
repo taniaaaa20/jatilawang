@@ -10,6 +10,7 @@ use App\Http\Controllers\TransaksiRentalController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\LaporanStokController;
+use App\Http\Controllers\MonitoringTransaksiController;
 
 // Halaman awal
 Route::get('/', function () {
@@ -64,6 +65,12 @@ Route::get('/pemilik/laporan-keuangan', [LaporanKeuanganController::class, 'inde
 // Laporan Stok Pemilik
 Route::get('/pemilik/laporan-stok', [LaporanStokController::class, 'index'])
     ->name('pemilik.laporan-stok.index');
+    
+    // Monitoring Transaksi khusus Pemilik
+Route::get('/pemilik/transaksi', [
+    MonitoringTransaksiController::class,
+    'index'
+])->name('pemilik.transaksi.index');
 
 // Kelola barang
 Route::resource('barang', BarangController::class);
@@ -95,4 +102,3 @@ Route::post('/pegawai/transaksi/{noNota}/kembalikan', [TransaksiRentalController
 
 Route::get('/pegawai/transaksi/{noNota}/nota', [TransaksiRentalController::class, 'nota'])
     ->name('transaksi.nota');
-
