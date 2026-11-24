@@ -53,8 +53,22 @@ class CustomerController extends Controller
             return $cek;
         }
 
-        $data_customer = DB::table('customer')
-            ->orderBy('nama_customer')
+        $data_customer = DB::table('customer as c')
+            ->leftJoin('sewa as s', 'c.id_customer', '=', 's.id_customer')
+            ->select(
+                'c.id_customer',
+                'c.nama_customer',
+                'c.noHP_customer',
+                DB::raw('COUNT(s.no_nota) AS total_transaksi'),
+                DB::raw('COALESCE(SUM(s.total_transaksi), 0) AS total_belanja'),
+                DB::raw('MAX(s.tanggal_sewa) AS transaksi_terakhir')
+            )
+            ->groupBy(
+                'c.id_customer',
+                'c.nama_customer',
+                'c.noHP_customer'
+            )
+            ->orderBy('c.nama_customer')
             ->get();
 
         return view('customer.index', compact('data_customer'));
@@ -106,7 +120,6 @@ class CustomerController extends Controller
             return $cek;
         }
 
-        // Pastikan pelanggan tersedia
         $customer = DB::table('customer')
             ->where('id_customer', $id)
             ->first();
@@ -146,7 +159,6 @@ class CustomerController extends Controller
             return $cek;
         }
 
-        // CEK APAKAH DATA PELANGGAN TERSEDIA
         $customer = DB::table('customer')
             ->where('id_customer', $id)
             ->first();
@@ -156,12 +168,10 @@ class CustomerController extends Controller
                 ->with('error', 'Data pelanggan tidak ditemukan.');
         }
 
-        // CEK RIWAYAT TRANSAKSI PELANGGAN
         $adaTransaksi = DB::table('sewa')
             ->where('id_customer', $id)
             ->exists();
 
-        // JIKA MEMILIKI RIWAYAT TRANSAKSI, PENGHAPUSAN DITOLAK
         if ($adaTransaksi) {
             return redirect()->route('customer.index')
                 ->with(
@@ -170,7 +180,6 @@ class CustomerController extends Controller
                 );
         }
 
-        // HAPUS DATA PELANGGAN
         $terhapus = DB::table('customer')
             ->where('id_customer', $id)
             ->delete();

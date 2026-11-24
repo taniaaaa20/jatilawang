@@ -22,82 +22,9 @@
             color: #212529;
         }
 
-        /* SIDEBAR */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 260px;
-            height: 100vh;
-            padding: 25px;
-            background: #2f3e2c;
-            color: white;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 40px;
-        }
-
-        .logo>i {
-            font-size: 30px;
-        }
-
-        .logo span {
-            display: block;
-            color: #facc15;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-            transition: .2s;
-        }
-
-        .sidebar a i {
-            margin-right: 10px;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            background: rgba(255, 255, 255, .15);
-            color: white;
-        }
-
-        .logout-form {
-            margin-top: 35px;
-        }
-
-        .sidebar .logout {
-            width: 100%;
-            border: none;
-            text-align: left;
-            background: transparent;
-            color: white;
-            padding: 12px;
-            border-radius: 12px;
-            font-family: inherit;
-        }
-
-        .sidebar .logout:hover {
-            background: rgba(255, 255, 255, .15);
-        }
-
         /* KONTEN UTAMA */
         .main {
-            margin-left: 260px;
+            margin-left: 250px;
             min-height: 100vh;
             padding: 30px;
         }
@@ -262,8 +189,10 @@
 
 <body>
 
+    {{-- SIDEBAR --}}
     @include('layouts.sidebar')
 
+    {{-- KONTEN UTAMA --}}
     <main class="main">
         <div class="container-fluid">
             <section class="barang-card">
@@ -300,7 +229,6 @@
                     </div>
                 @endif
 
-
                 {{-- PESAN VALIDASI --}}
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -316,10 +244,10 @@
                     </div>
                 @endif
 
+                {{-- TABEL BARANG --}}
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover align-middle">
                         <thead>
-                            <tr>
                             <tr>
                                 <th>No</th>
                                 <th>Kode Barang</th>
@@ -341,7 +269,8 @@
 
                                     <td>
                                         @if (!empty($barang->gambar))
-                                            <img src="{{ asset('gambar/' . $barang->gambar) }}" class="gambar-barang"
+                                            <img src="{{ asset('gambar/' . $barang->gambar) }}"
+                                                class="gambar-barang"
                                                 alt="{{ $barang->nama_barang }}">
                                         @else
                                             <span class="text-muted">-</span>
@@ -366,7 +295,8 @@
                                                 Edit
                                             </a>
 
-                                            <form action="{{ route('barang.destroy', $barang->id_barang) }}" method="POST"
+                                            <form action="{{ route('barang.destroy', $barang->id_barang) }}"
+                                                method="POST"
                                                 onsubmit="return confirm('Yakin ingin menghapus barang {{ $barang->nama_barang }}?')">
 
                                                 @csrf
@@ -382,7 +312,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center py-4">
+                                    <td colspan="9" class="text-center py-4">
                                         Belum ada data barang.
                                     </td>
                                 </tr>
@@ -399,4 +329,4 @@
 
 </body>
 
-</html> in dmna
+</html>

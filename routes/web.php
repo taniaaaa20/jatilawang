@@ -78,7 +78,7 @@ Route::resource('barang', BarangController::class);
 // DATA PELANGGAN
 // Bisa diakses pegawai dan pemilik
 
-Route::get('/data-pelanggan', [CustomerController::class, 'dataPelanggan'])
+Route::get('/pemilik/customer', [CustomerController::class, 'dataPelanggan'])
     ->name('customer.index');
 
 Route::post('/data-pelanggan', [CustomerController::class, 'store'])
